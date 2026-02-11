@@ -40,6 +40,12 @@ training/
 discuss*.txt
 实验报告*.txt
 
+# 内部文档（不上传）
+QA.md
+*QA*.md
+*PLAN*.md
+exp1_PLAN.md
+
 # 其他
 *.log
 *.pkl
