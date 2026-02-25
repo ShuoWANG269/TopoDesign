@@ -54,3 +54,7 @@ exp1_DEMAND.md
 *.log
 *.pkl
 *.pth
+
+# 仅保留 rl_topo_opt 上传
+ATOP/
+neuroplan/
