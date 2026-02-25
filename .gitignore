@@ -41,6 +41,7 @@ discuss*.txt
 实验报告*.txt
 
 # 内部文档（不上传）
+AGENTS.md
 QA.md
 *QA*.md
 *PLAN*.md
