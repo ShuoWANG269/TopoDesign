@@ -1,39 +1,37 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Installation script for RL Topology Optimization
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "${SCRIPT_DIR}"
 
-echo "Installing dependencies for RL Topology Optimization..."
+echo "Installing dependencies for RL Topology Optimization with uv..."
 
-# Check if pip3 is available
-if ! command -v pip3 &> /dev/null; then
-    echo "Error: pip3 not found. Please install Python 3 and pip3 first."
+if ! command -v uv >/dev/null 2>&1; then
+    echo "Error: uv is not installed or not in PATH."
+    echo "Install uv first: https://docs.astral.sh/uv/getting-started/installation/"
     exit 1
 fi
 
-# Install core dependencies
-echo "Installing core dependencies..."
-pip3 install torch>=2.0.0
-pip3 install torch-geometric>=2.3.0
-pip3 install stable-baselines3>=2.0.0
-pip3 install gym>=0.26.0
-pip3 install networkx>=3.1
-pip3 install numpy>=1.24.0
-pip3 install scipy>=1.10.0
+if [[ ! -f "requirements.lock" ]]; then
+    echo "Error: requirements.lock not found in ${SCRIPT_DIR}"
+    echo "Expected file: ${SCRIPT_DIR}/requirements.lock"
+    exit 1
+fi
 
-# Install ATOP dependencies
-echo "Installing ATOP dependencies..."
-pip3 install sympy>=1.12
-pip3 install pandas>=2.0.0
+echo "Creating/updating virtual environment (.venv) with Python 3.9..."
+if ! uv venv --python 3.9 --allow-existing .venv; then
+    echo "Error: failed to create .venv with Python 3.9."
+    echo "Please install Python 3.9 on this machine and rerun."
+    exit 1
+fi
 
-# Install optional dependencies
-echo "Installing optional dependencies..."
-pip3 install tensorboard>=2.13.0
+echo "Syncing exact locked dependencies from requirements.lock..."
+uv pip sync --python .venv/bin/python requirements.lock
 
-# Install development dependencies
-echo "Installing development dependencies..."
-pip3 install pytest>=7.4.0
-
-echo "Installation complete!"
 echo ""
-echo "To verify installation, run:"
-echo "  cd rl_topo_opt && python3 test_basic.py"
+echo "Installation complete."
+echo "Verification:"
+echo "  .venv/bin/python -V"
+echo "  uv pip freeze --python .venv/bin/python"
+echo "Optional smoke test:"
+echo "  .venv/bin/python test_basic.py"

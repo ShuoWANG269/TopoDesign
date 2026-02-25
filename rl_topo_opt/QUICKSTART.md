@@ -2,19 +2,46 @@
 
 ## 安装依赖
 
+### 前置条件
+
+```bash
+uv --version
+```
+
+若未安装 `uv`，请先参考官方文档安装：<https://docs.astral.sh/uv/getting-started/installation/>
+
 ### 方法 1：使用安装脚本（推荐）
 
 ```bash
 cd rl_topo_opt
-chmod +x install.sh
 ./install.sh
 ```
 
-### 方法 2：手动安装
+该脚本会：
+- 使用 Python 3.9 创建/复用 `.venv`
+- 按 `requirements.lock` 精确同步依赖
+
+### 方法 2：手动使用 uv（等价）
 
 ```bash
 cd rl_topo_opt
-pip3 install -r requirements.txt
+uv venv --python 3.9 --allow-existing .venv
+uv pip sync --python .venv/bin/python requirements.lock
+```
+
+### 安装后验证
+
+```bash
+.venv/bin/python -V
+uv pip freeze --python .venv/bin/python
+.venv/bin/python test_basic.py
+```
+
+### 维护锁文件（仅在需要升级依赖时）
+
+```bash
+cd rl_topo_opt
+uv pip freeze --python .venv/bin/python > requirements.lock
 ```
 
 ## 训练命令
@@ -22,13 +49,13 @@ pip3 install -r requirements.txt
 ### 快速训练（测试用）
 
 ```bash
-python main.py --n_gpus 8 --total_timesteps 1000
+.venv/bin/python main.py --n_gpus 8 --total_timesteps 1000
 ```
 
 ### 完整训练
 
 ```bash
-python main.py \
+.venv/bin/python main.py \
     --n_gpus 16 \
     --depth 2 \
     --width 3 \
@@ -41,7 +68,7 @@ python main.py \
 ### 使用全连接初始拓扑训练
 
 ```bash
-python main.py \
+.venv/bin/python main.py \
     --n_gpus 16 \
     --depth 2 \
     --width 3 \
@@ -57,13 +84,13 @@ python main.py \
 ### 断点续训
 
 ```bash
-python main.py --resume ./checkpoints/checkpoint_step_1000_*.pkl
+.venv/bin/python main.py --resume ./checkpoints/checkpoint_step_1000_*.pkl
 ```
 
 ### 仅评估
 
 ```bash
-python main.py \
+.venv/bin/python main.py \
     --eval_only \
     --resume ./checkpoints/checkpoint_step_100000_*.pkl \
     --n_eval_episodes 20

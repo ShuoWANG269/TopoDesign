@@ -46,3 +46,19 @@ TopoDesign/
 ## 快速开始
 
 详见 [QUICKSTART.md](./QUICKSTART.md)
+
+## 环境安装（uv）
+
+本项目使用 `uv` 管理虚拟环境与依赖，并通过 `requirements.lock` 复刻已验证环境。
+
+```bash
+cd rl_topo_opt
+./install.sh
+```
+
+安装完成后可用以下命令验证：
+
+```bash
+.venv/bin/python -V
+uv pip freeze --python .venv/bin/python
+```
