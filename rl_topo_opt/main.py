@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../ATOP'))
 
 from generator.network import construct_topology
 from NSGAII.solution import NetTopology
+from add01_full_mesh_topology import TopologyRewriteMode, rewrite_topology
 from training.trainer import Trainer
 
 
@@ -60,6 +61,19 @@ def main():
     parser.add_argument('--n_gpus', type=int, default=16, help='Number of GPUs')
     parser.add_argument('--depth', type=int, default=2, help='Topology depth')
     parser.add_argument('--width', type=int, default=3, help='Topology width')
+    parser.add_argument(
+        '--topology_rewrite_mode',
+        type=str,
+        choices=[mode.value for mode in TopologyRewriteMode],
+        default=TopologyRewriteMode.NONE.value,
+        help='Optional initial topology rewrite mode'
+    )
+    parser.add_argument(
+        '--full_mesh_bandwidth',
+        type=float,
+        default=1.0,
+        help='Default edge bandwidth used by full-mesh topology rewrite'
+    )
 
     # Training parameters
     parser.add_argument('--total_timesteps', type=int, default=10000, help='Total training timesteps')
@@ -85,6 +99,11 @@ def main():
         n_gpus=args.n_gpus,
         depth=args.depth,
         width=args.width
+    )
+    initial_net_topo = rewrite_topology(
+        initial_net_topo,
+        mode=args.topology_rewrite_mode,
+        default_bandwidth=args.full_mesh_bandwidth
     )
 
     # Create trainer

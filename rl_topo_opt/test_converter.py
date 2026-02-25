@@ -10,12 +10,30 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../ATOP'))
 import pytest
 from converter import SimplifiedTopology, convert_atop_to_simplified, is_connected
 from generator.network import construct_topology
+from NSGAII.solution import NetTopology
 
 
 def test_convert_atop_to_simplified():
     """Test ATOP to SimplifiedTopology conversion."""
-    # Generate a small topology
-    net_topo = construct_topology(n_gpus=8, depth=2, width=2)
+    def full_generator(topology, connection_blocks, blueprint):
+        return topology, connection_blocks, blueprint
+
+    # ATOP generation is stochastic; retry until we get a topology with edges.
+    net_topo = None
+    for _ in range(10):
+        topology, connection_blocks, blueprint = construct_topology(
+            total_gpus=8,
+            total_layers=2,
+            d_max=2,
+            generator=full_generator
+        )
+        candidate = NetTopology(topology, connection_blocks, blueprint)
+        simplified_candidate = convert_atop_to_simplified(candidate)
+        if len(simplified_candidate.edges) > 0:
+            net_topo = candidate
+            break
+
+    assert net_topo is not None, "Could not generate a topology with edges after retries"
 
     # Convert
     simplified = convert_atop_to_simplified(net_topo)

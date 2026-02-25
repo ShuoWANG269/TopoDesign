@@ -6,6 +6,10 @@
 rl_topo_opt/
 ├── converter.py              # ATOP → SimplifiedTopology 转换器
 ├── main.py                   # 训练入口脚本
+├── add01_full_mesh_topology/         # 初始拓扑重构模块（可选）
+│   ├── __init__.py
+│   ├── types.py              # 重构模式与配置类型
+│   └── full_mesh.py          # 全连接重构实现
 │
 ├── env/                      # RL 环境模块
 │   ├── __init__.py
@@ -29,6 +33,7 @@ rl_topo_opt/
 
 **核心文件说明：**
 - `converter.py`: 负责 ATOP 拓扑的转换和简化
+- `add01_full_mesh_topology/full_mesh.py`: 可选将初始拓扑重构为全连接拓扑
 - `env/topo_env.py`: 实现 Gym 环境接口，动作为删除边
 - `env/reward.py`: 整合 cost、latency、fault tolerance 三个指标
 - `models/gnn.py`: 使用图卷积网络编码拓扑状态
@@ -89,6 +94,8 @@ rl_topo_opt/
 
 ```
 ATOP 生成器
+    ↓
+add01_full_mesh_topology（可选：none/full_mesh）
     ↓
 NetTopology（ATOP 格式）
     ↓
@@ -160,3 +167,13 @@ PPO 更新网络
 - 拓扑从初始状态出发，通过逐步删除低效的边来优化
 - 删除操作具有明确的物理意义：减少硬件成本
 - 动作掩码保证拓扑始终连通，满足基本可用性要求
+
+## 拓扑重构模式
+
+`main.py` 支持可选重构参数：
+- `--topology_rewrite_mode {none,full_mesh}`
+- `--full_mesh_bandwidth FLOAT`（默认 `1.0`）
+
+模式说明：
+- `none`：保留 ATOP 生成的原始连接（默认）
+- `full_mesh`：删除原有连接，保留 GPU/SW 节点并重建为完全图；同时同步更新 `siblings`、`connection_blocks` 与 `blueprint` 中的带宽字段，保证后续环境和 ATOP 三指标评分可用

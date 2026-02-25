@@ -38,6 +38,22 @@ python main.py \
     --tensorboard_log ./logs
 ```
 
+### 使用全连接初始拓扑训练
+
+```bash
+python main.py \
+    --n_gpus 16 \
+    --depth 2 \
+    --width 3 \
+    --topology_rewrite_mode full_mesh \
+    --full_mesh_bandwidth 1.0 \
+    --total_timesteps 100000
+```
+
+说明：
+- 默认 `--topology_rewrite_mode none`，保持原始 ATOP 拓扑
+- 启用 `full_mesh` 后，会保留节点并把初始边重建为全连接（完全图）
+
 ### 断点续训
 
 ```bash
