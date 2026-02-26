@@ -22,6 +22,8 @@ logs/
 result/
 runs/
 training/
+!rl_topo_opt/training/
+!rl_topo_opt/training/**
 
 # 系统文件
 .DS_Store
@@ -54,6 +56,10 @@ exp1_DEMAND.md
 *.log
 *.pkl
 *.pth
+
+# 保留 rl_topo_opt 必要源码目录
+!rl_topo_opt/env/
+!rl_topo_opt/env/**
 
 # 仅保留 rl_topo_opt 上传
 ATOP/
